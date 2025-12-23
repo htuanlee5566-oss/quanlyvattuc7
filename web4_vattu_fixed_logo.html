@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Quản lý vật tư CTĐ - CTCT</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+:root{
+--bg:#f4f6f3;--card:#e8efe5;--dark:#2e3b2f;--olive:#7a8f65;
+}
+body{margin:0;font-family:Arial;background:var(--bg)}
+.wrap{max-width:1100px;margin:18px auto;padding:16px}
+.camo{background:var(--card);padding:18px;border-radius:10px}
+.header{display:grid;grid-template-columns:auto 1fr auto;gap:12px;
+background:#2e3b2f;color:#fff;padding:12px;border-radius:8px}
+.logo{width:48px;height:48px;border-radius:50%;border:3px solid #f1c40f;background:#fff}
+.title{text-align:center}
+.tabs{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.tab-btn{padding:8px 14px;border-radius:8px;border:2px solid #7a8f65;
+background:#d7e2d1;font-weight:700;cursor:pointer}
+.tab-btn.active{background:#7a8f65;color:#fff}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+input,select{padding:7px;border-radius:6px;border:1px solid #999}
+.btn{padding:7px 12px;border-radius:6px;border:none;cursor:pointer}
+.add-btn{background:#7a8f65;color:#fff}
+.edit-btn{background:#bba247;color:#fff}
+.del-btn{background:#b84747;color:#fff}
+.table-wrap{background:#2e3b2f;padding:8px;border-radius:8px;overflow:auto}
+table{width:100%;border-collapse:collapse;color:#fff}
+th,td{padding:8px;border:1px solid rgba(255,255,255,.1);text-align:center}
+th{background:#495c45}
+.thumb{width:60px;height:60px;object-fit:cover;border-radius:6px}
+#loginBox{width:300px;margin:60px auto;background:#fff;padding:20px;border-radius:8px}
+#popup{position:fixed;inset:0;background:rgba(0,0,0,.5);
+display:none;align-items:center;justify-content:center}
+.modal{background:#fff;width:420px;padding:16px;border-radius:10px}
+</style>
+</head>
+
+<body>
+
+<div id="loginBox">
+<h3>Đăng nhập hệ thống</h3>
+<input id="username" placeholder="Tài khoản"><br><br>
+<input id="password" type="password" placeholder="Mật khẩu"><br><br>
+<button class="btn add-btn" onclick="login()">Đăng nhập</button>
+</div>
+
+<div class="wrap" id="mainApp" style="display:none">
+<div class="camo">
+
+<div class="tabs">
+<button class="tab-btn active" onclick="switchUnit('ALL',this)">Tất cả</button>
+<button class="tab-btn" onclick="switchUnit('Đại đội 7',this)">Đại đội 7</button>
+<button class="tab-btn" onclick="switchUnit('Đại đội 8',this)">Đại đội 8</button>
+<button class="tab-btn" onclick="switchUnit('Đại đội 9',this)">Đại đội 9</button>
+<button class="tab-btn" onclick="switchUnit('Trung đội TT',this)">Trung đội TT</button>
+<button class="tab-btn" onclick="switchUnit('Tiểu đoàn bộ',this)">Tiểu đoàn bộ</button>
+</div>
+
+<div class="header">
+<img src="logo_left.png" class="logo">
+<div class="title">
+<b>QUẢN LÝ VẬT TƯ CTĐ - CTCT</b><br>
+<span>Tiểu đoàn 3 – Lữ đoàn 283 – Quân khu 4</span>
+</div>
+<img src="logo_right.png" class="logo">
+</div>
+
+<div class="toolbar">
+<input id="searchBox" placeholder="Tìm tên vật tư">
+<select id="filterQuality">
+<option value="">-- Chất lượng --</option>
+<option>Tốt</option><option>Trung bình</option><option>Hỏng</option>
+</select>
+
+<button class="btn add-btn add-only" onclick="openPopup()">Thêm</button>
+<button class="btn" onclick="exportExcel()">Excel</button>
+<button class="btn" onclick="exportExcel_BQP()">Excel BQP</button>
+<button class="btn" onclick="exportPDF()">PDF</button>
+<button class="btn del-btn" onclick="logout()">Đăng xuất</button>
+</div>
+
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>STT</th><th>Ảnh</th><th>Tên</th><th>Đơn vị</th>
+<th>Số lượng</th><th>Chất lượng</th><th>Ngày</th><th>Ghi chú</th>
+<th class="add-only">Thao tác</th>
+</tr>
+</thead>
+<tbody id="table-body"></tbody>
+</table>
+</div>
+
+</div>
+</div>
+
+<div id="popup">
+<div class="modal">
+<h3 id="popTitle">Thêm vật tư</h3>
+<input id="ten" placeholder="Tên vật tư"><br><br>
+<select id="donvi">
+<option>Đại đội 7</option><option>Đại đội 8</option>
+<option>Đại đội 9</option><option>Trung đội TT</option><option>Tiểu đoàn bộ</option>
+</select><br><br>
+<input id="soluong" type="number" placeholder="Số lượng"><br><br>
+<select id="chatluong">
+<option>Tốt</option><option>Trung bình</option><option>Hỏng</option>
+</select><br><br>
+<input id="time" type="date"><br><br>
+<input id="ghichu" placeholder="Ghi chú"><br><br>
+<button class="btn add-btn" onclick="saveItem()">Lưu</button>
+<button class="btn del-btn" onclick="closePopup()">Hủy</button>
+</div>
+</div>
+
+<!-- THƯ VIỆN -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.5.29/dist/jspdf.plugin.autotable.min.js"></script>
+
+<script>
+/* ===== DỮ LIỆU & PHÂN QUYỀN ===== */
+const USERS=[
+{u:'admin',p:'123456',r:2},
+{u:'nguoixem',p:'',r:1}
+];
+let currentUser=JSON.parse(localStorage.getItem("user"));
+let items=JSON.parse(localStorage.getItem("vattu"))||[];
+let currentUnit='ALL',editIndex=null;
+
+function login(){
+const u=username.value,p=password.value;
+const user=USERS.find(x=>x.u===u&&x.p===p);
+if(!user)return alert("Sai tài khoản");
+currentUser={u:u,r:user.r};
+localStorage.setItem("user",JSON.stringify(currentUser));
+init();
+}
+function logout(){
+localStorage.removeItem("user");
+location.reload();
+}
+function init(){
+loginBox.style.display='none';
+mainApp.style.display='block';
+applyPermission();
+render();
+}
+if(currentUser)init();
+
+function applyPermission(){
+document.querySelectorAll(".add-only").forEach(e=>{
+e.style.display=currentUser.r===2?'':'none';
+});
+}
+
+/* ===== CHỨC NĂNG ===== */
+function switchUnit(u,btn){
+currentUnit=u;
+document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+btn.classList.add('active');
+render();
+}
+function openPopup(i=null){
+editIndex=i;
+popup.style.display='flex';
+if(i!==null){
+const it=items[i];
+ten.value=it.ten;donvi.value=it.donvi;
+soluong.value=it.soluong;chatluong.value=it.chatluong;
+time.value=it.time;ghichu.value=it.ghichu;
+}else{ten.value=soluong.value=ghichu.value='';}
+}
+function closePopup(){popup.style.display='none';}
+
+function saveItem(){
+const data={
+ten:ten.value,donvi:donvi.value,soluong:+soluong.value,
+chatluong:chatluong.value,time:time.value,ghichu:ghichu.value
+};
+if(editIndex===null)items.push(data);
+else items[editIndex]=data;
+localStorage.setItem("vattu",JSON.stringify(items));
+closePopup();render();
+}
+
+function render(){
+const body=document.getElementById("table-body");
+body.innerHTML='';
+let filtered=items.filter(it=>
+(currentUnit==='ALL'||it.donvi===currentUnit)&&
+(it.ten||'').toLowerCase().includes(searchBox.value.toLowerCase())&&
+(!filterQuality.value||it.chatluong===filterQuality.value)
+);
+filtered.forEach((it,i)=>{
+body.innerHTML+=`
+<tr>
+<td>${i+1}</td><td></td>
+<td>${it.ten}</td><td>${it.donvi}</td>
+<td>${it.soluong}</td><td>${it.chatluong}</td>
+<td>${it.time||''}</td><td>${it.ghichu||''}</td>
+<td class="add-only">
+<button class="edit-btn" onclick="openPopup(${i})">Sửa</button>
+<button class="del-btn" onclick="items.splice(${i},1);render()">Xóa</button>
+</td></tr>`;
+});
+}
+
+/* ===== XUẤT FILE ===== */
+function exportExcel(){
+const ws=XLSX.utils.json_to_sheet(items);
+const wb=XLSX.utils.book_new();
+XLSX.utils.book_append_sheet(wb,ws,"VatTu");
+XLSX.writeFile(wb,"Vat_tu.xlsx");
+}
+
+function exportExcel_BQP(){
+const data=items.map((it,i)=>[i+1,it.ten,it.donvi,it.soluong,it.chatluong,it.time,it.ghichu]);
+const ws=XLSX.utils.aoa_to_sheet([
+["","","CỘNG HÒA XHCN VIỆT NAM"],
+["","","Độc lập – Tự do – Hạnh phúc"],[],
+["STT","Tên","Đơn vị","SL","CL","Ngày","Ghi chú"],
+...data
+]);
+const wb=XLSX.utils.book_new();
+XLSX.utils.book_append_sheet(wb,ws,"BaoCao");
+XLSX.writeFile(wb,"Bao_cao_BQP.xlsx");
+}
+
+function exportPDF(){
+const {jsPDF}=window.jspdf;
+const doc=new jsPDF();
+doc.text("BÁO CÁO VẬT TƯ CTĐ - CTCT",14,15);
+doc.autoTable({
+startY:20,
+head:[["STT","Tên","Đơn vị","SL","CL","Ngày","Ghi chú"]],
+body:items.map((it,i)=>[i+1,it.ten,it.donvi,it.soluong,it.chatluong,it.time,it.ghichu])
+});
+doc.save("Bao_cao.pdf");
+}
+</script>
+
+</body>
+</html>
