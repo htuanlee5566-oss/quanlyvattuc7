@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="vi">
+
+<head>
+    <meta charset="utf-8">
+    <title>Đăng nhập hệ thống</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <style>
+        body {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: Arial;
+
+    background: 
+      linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)),
+      url('login_bg.jpg') center/cover no-repeat fixed;
+}
+
+        .box {
+    background: rgba(255,255,255,0.96);
+    padding: 30px;
+    border-radius: 10px;
+    width: 320px;
+    text-align: center;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, .45)
+}
+
+        h2 {
+            color: #8b0000;
+            margin-bottom: 20px
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 6px;
+            border: 1px solid #999
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 12px;
+            background: #8b0000;
+            color: #ffd700;
+            border: none;
+            border-radius: 6px;
+            font-weight: 700;
+            cursor: pointer
+        }
+
+        small {
+            color: #666
+        }
+        .footer-marquee {
+  position: fixed;
+  top: 30px;   /* đẩy lên cao */
+  left: 0;
+  width: 100%;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.marquee-text {
+  display: inline-block;
+  white-space: nowrap;
+  padding-left: 100%;
+  font-size: 30px;        /* chữ to hơn */
+  font-weight: 700;
+  letter-spacing: 1px;   /* nhìn đầm hơn */
+  color: #ffd700;
+  text-shadow: 0 0 8px rgba(0,0,0,0.85);
+  animation: marqueeMove 15s linear infinite;
+}
+
+@keyframes marqueeMove {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+.system-title {
+  position: absolute;
+  top: 120px;
+  width: 100%;
+  text-align: center;
+  font-size: 22px;
+  font-weight: 700;
+  color: #ffd700;
+  letter-spacing: 1px;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.9);
+}
+    </style>
+</head>
+
+<body>
+  <div class="system-title">
+  HỆ THỐNG QUẢN LÝ, THEO DÕI TRANG BỊ, VẬT TƯ CTĐ - CTCT
+</div>
+    <form class="box" onsubmit="login(); return false;">
+  <h2>ĐĂNG NHẬP</h2>
+  <input id="user"
+       placeholder="Tên đăng nhập"
+       autocomplete="username"
+       onkeydown="if(event.key === 'Enter') document.getElementById('pass').focus()">
+  <input id="pass"
+       type="password"
+       placeholder="Mật khẩu"
+       autocomplete="current-password"
+       onkeydown="if(event.key === 'Enter') login()">
+  <button type="submit">Đăng nhập</button>
+  <small>Hệ thống quản lý vật tư</small>
+    </form>
+    <script>
+        const loginUser = JSON.parse(localStorage.getItem('loginUser'));
+        
+    </script>
+    <script>
+        const USERS = [
+            { user: 'admin', pass: '123456', role: 'admin', infor: `Hoàng Lê Anh Tuấn <br> Chính trị viên - Tiểu đoàn 3 ` },
+            { user: 'nguoixem', pass: '1', role: 'viewer', infor: 'Nguyễn Hoàng Phi <br> Đại đội trưởng - Đại đội 7' }
+        ];
+
+        function login() {
+            const u = user.value.trim();
+            const p = pass.value.trim();
+            const found = USERS.find(x => x.user === u && x.pass === p);
+
+            if (!found) {
+                alert('Sai tài khoản hoặc mật khẩu');
+                return;
+            }
+
+            localStorage.setItem('loginUser', JSON.stringify(found));
+            location.href = 'index2.html';
+        }
+    </script>
+    <script>
+  // Tự động focus ô tên đăng nhập khi mở trang
+  window.onload = function () {
+    document.getElementById('user').focus();
+  }
+</script>
+<div class="footer-marquee">
+  <div class="marquee-text">
+    TIỂU ĐOÀN 3 – LỮ ĐOÀN PHÒNG KHÔNG 283 – QUÂN KHU 4
+  </div>
+</div>
+</body>
+
+</html>
